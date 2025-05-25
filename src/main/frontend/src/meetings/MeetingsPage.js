@@ -1,23 +1,28 @@
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import NewMeetingForm from "./NewMeetingForm";
 import MeetingsList from "./MeetingsList";
+import "../App.css";
 
-export default function MeetingsPage({username}) {
+export default function MeetingsPage({ username }) {
     const [meetings, setMeetings] = useState([]);
     const [addingNewMeeting, setAddingNewMeeting] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const fetchMeetings = async () => {
+            setLoading(true);
             const response = await fetch(`/api/meetings`);
             if (response.ok) {
                 const meetings = await response.json();
                 setMeetings(meetings);
             }
+            setLoading(false);
         };
         fetchMeetings();
     }, []);
 
     async function handleNewMeeting(meeting) {
+        setLoading(true);
         const response = await fetch('/api/meetings', {
             method: 'POST',
             body: JSON.stringify(meeting),
@@ -29,9 +34,11 @@ export default function MeetingsPage({username}) {
             setMeetings(prevMeetings => [...prevMeetings, addedMeeting]);
             setAddingNewMeeting(false);
         }
+        setLoading(false);
     }
 
     async function handleDeleteMeeting(meeting) {
+        setLoading(true);
         const response = await fetch(`/api/meetings/${meeting.id}`, {
             method: 'DELETE',
         });
@@ -42,9 +49,11 @@ export default function MeetingsPage({username}) {
         } else if (response.status === 409) {
             alert("Nie można usunąć spotkania – są zapisani uczestnicy.");
         }
+        setLoading(false);
     }
 
     async function handleRegister(meeting) {
+        setLoading(true);
         const response = await fetch(`/api/meetings/${meeting.id}/participants/${username}`, {
             method: 'PUT',
         });
@@ -53,9 +62,11 @@ export default function MeetingsPage({username}) {
             const updatedMeetings = await updated.json();
             setMeetings(updatedMeetings);
         }
+        setLoading(false);
     }
 
     async function handleUnregister(meeting) {
+        setLoading(true);
         const response = await fetch(`/api/meetings/${meeting.id}/participants/${username}`, {
             method: 'DELETE',
         });
@@ -64,26 +75,39 @@ export default function MeetingsPage({username}) {
             const updatedMeetings = await updated.json();
             setMeetings(updatedMeetings);
         }
+        setLoading(false);
     }
-
 
     return (
         <div>
             <h2>Zajęcia ({meetings.length})</h2>
-            {
-                addingNewMeeting
-                    ? <NewMeetingForm onSubmit={(meeting) => handleNewMeeting(meeting)}/>
-                    : <button onClick={() => setAddingNewMeeting(true)}>Dodaj nowe spotkanie</button>
-            }
-            {meetings.length > 0 &&
-                <MeetingsList
-                    meetings={meetings}
-                    username={username}
-                    onDelete={handleDeleteMeeting}
-                    onRegister={handleRegister}
-                    onUnregister={handleUnregister}
-                />
-            }
+
+            {loading && (
+                <div style={{ textAlign: "center", padding: "20px" }}>
+                    <div className="lds-dual-ring"></div>
+                    <p>Ładowanie danych...</p>
+                </div>
+            )}
+
+            {!loading && (
+                <>
+                    {
+                        addingNewMeeting
+                            ? <NewMeetingForm onSubmit={(meeting) => handleNewMeeting(meeting)} />
+                            : <button onClick={() => setAddingNewMeeting(true)}>Dodaj nowe spotkanie</button>
+                    }
+                    {meetings.length > 0 &&
+                        <MeetingsList
+                            meetings={meetings}
+                            username={username}
+                            onDelete={handleDeleteMeeting}
+                            onRegister={handleRegister}
+                            onUnregister={handleUnregister}
+                        />
+                    }
+                </>
+            )}
         </div>
-    )
+    );
 }
+
