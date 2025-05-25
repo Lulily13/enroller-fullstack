@@ -5,6 +5,7 @@ export default function MeetingsList({ meetings, onDelete, onRegister, onUnregis
             <tr>
                 <th>Nazwa spotkania</th>
                 <th>Opis</th>
+                <th>Uczestnicy</th>
                 <th>Akcje</th>
             </tr>
             </thead>
@@ -14,6 +15,7 @@ export default function MeetingsList({ meetings, onDelete, onRegister, onUnregis
                     <tr key={meeting.id}>
                         <td>{meeting.title}</td>
                         <td>{meeting.description}</td>
+                        <td>{meeting.participants?.length || 0}</td>
                         <td className="meeting-list-buttons">
                             {meeting.participants?.some(p => p.login === username) ? (
                                 <button className="meeting-list-button unregister" onClick={() => onUnregister(meeting)}>Wypisz
