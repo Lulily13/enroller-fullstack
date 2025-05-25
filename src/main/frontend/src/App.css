@@ -5,10 +5,26 @@
   align-items: center;
 }
 
+.meeting-list-button.unregister {
+  display: flex;
+  align-items: center;
+  background-color: #525252;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.meeting-list-button:hover {
+  background-color: #A69F98;
+  cursor: pointer;
+  border: none;
+}
+
 .meeting-list-button.delete:hover {
-  background-color: #e74c3c; /* intensywna czerwień */
+  background-color: #D00000;
   color: white;
-  border-color: #e74c3c;
+  border-color: #D00000;
   cursor: pointer;
 }
 

@@ -16,7 +16,7 @@ export default function MeetingsList({ meetings, onDelete, onRegister, onUnregis
                         <td>{meeting.description}</td>
                         <td className="meeting-list-buttons">
                             {meeting.participants?.some(p => p.login === username) ? (
-                                <button className="meeting-list-button" onClick={() => onUnregister(meeting)}>Wypisz
+                                <button className="meeting-list-button unregister" onClick={() => onUnregister(meeting)}>Wypisz
                                     się</button>
                             ) : (
                                 <button className="meeting-list-button" onClick={() => onRegister(meeting)}>Zapisz
