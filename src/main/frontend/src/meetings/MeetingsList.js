@@ -14,13 +14,16 @@ export default function MeetingsList({ meetings, onDelete, onRegister, onUnregis
                     <tr key={meeting.id}>
                         <td>{meeting.title}</td>
                         <td>{meeting.description}</td>
-                        <td>
-                            <button onClick={() => onDelete(meeting)}>Usuń spotkanie</button>
+                        <td className="meeting-list-buttons">
                             {meeting.participants?.some(p => p.login === username) ? (
-                                <button onClick={() => onUnregister(meeting)}>Wypisz się</button>
+                                <button className="meeting-list-button" onClick={() => onUnregister(meeting)}>Wypisz
+                                    się</button>
                             ) : (
-                                <button onClick={() => onRegister(meeting)}>Zapisz się</button>
+                                <button className="meeting-list-button" onClick={() => onRegister(meeting)}>Zapisz
+                                    się</button>
                             )}
+                            <button className="meeting-list-button delete" onClick={() => onDelete(meeting)}>Usuń spotkanie
+                            </button>
                         </td>
                     </tr>
                 ))

@@ -1,3 +1,18 @@
+.meeting-list-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.meeting-list-button.delete:hover {
+  background-color: #e74c3c; /* intensywna czerwień */
+  color: white;
+  border-color: #e74c3c;
+  cursor: pointer;
+}
+
+
 .lds-dual-ring {
   display: inline-block;
   width: 40px;
