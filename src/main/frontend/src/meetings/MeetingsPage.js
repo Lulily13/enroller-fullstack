@@ -6,34 +6,51 @@ import "../App.css";
 export default function MeetingsPage({ username }) {
     const [meetings, setMeetings] = useState([]);
     const [addingNewMeeting, setAddingNewMeeting] = useState(false);
+    const [editingMeeting, setEditingMeeting] = useState(null);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const fetchMeetings = async () => {
-            setLoading(true);
-            const response = await fetch(`/api/meetings`);
-            if (response.ok) {
-                const meetings = await response.json();
-                setMeetings(meetings);
-            }
-            setLoading(false);
-        };
         fetchMeetings();
     }, []);
 
-    async function handleNewMeeting(meeting) {
+    async function fetchMeetings() {
         setLoading(true);
-        const response = await fetch('/api/meetings', {
-            method: 'POST',
-            body: JSON.stringify(meeting),
-            headers: { 'Content-Type': 'application/json' }
-        });
-
+        const response = await fetch(`/api/meetings`);
         if (response.ok) {
-            const addedMeeting = await response.json();
-            setMeetings(prevMeetings => [...prevMeetings, addedMeeting]);
-            setAddingNewMeeting(false);
+            const meetings = await response.json();
+            setMeetings(meetings);
         }
+        setLoading(false);
+    }
+
+    async function handleSaveMeeting(meeting) {
+        setLoading(true);
+
+        if (editingMeeting) {
+            const response = await fetch(`/api/meetings/${editingMeeting.id}`, {
+                method: 'PUT',
+                body: JSON.stringify({ ...editingMeeting, ...meeting }),
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (response.ok) {
+                await fetchMeetings();
+                setEditingMeeting(null);
+            }
+        } else {
+            const response = await fetch('/api/meetings', {
+                method: 'POST',
+                body: JSON.stringify(meeting),
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (response.ok) {
+                const addedMeeting = await response.json();
+                setMeetings(prevMeetings => [...prevMeetings, addedMeeting]);
+            }
+        }
+
+        setAddingNewMeeting(false);
         setLoading(false);
     }
 
@@ -58,9 +75,7 @@ export default function MeetingsPage({ username }) {
             method: 'PUT',
         });
         if (response.ok) {
-            const updated = await fetch(`/api/meetings`);
-            const updatedMeetings = await updated.json();
-            setMeetings(updatedMeetings);
+            await fetchMeetings();
         }
         setLoading(false);
     }
@@ -71,11 +86,14 @@ export default function MeetingsPage({ username }) {
             method: 'DELETE',
         });
         if (response.ok) {
-            const updated = await fetch(`/api/meetings`);
-            const updatedMeetings = await updated.json();
-            setMeetings(updatedMeetings);
+            await fetchMeetings();
         }
         setLoading(false);
+    }
+
+    function handleEdit(meeting) {
+        setEditingMeeting(meeting);
+        setAddingNewMeeting(true);
     }
 
     return (
@@ -93,9 +111,18 @@ export default function MeetingsPage({ username }) {
                 <>
                     {
                         addingNewMeeting
-                            ? <NewMeetingForm onSubmit={(meeting) => handleNewMeeting(meeting)} />
-                            : <button onClick={() => setAddingNewMeeting(true)}>Dodaj nowe spotkanie</button>
+                            ? (
+                                <NewMeetingForm
+                                    onSubmit={handleSaveMeeting}
+                                    initialData={editingMeeting}
+                                />
+                            )
+                            : <button onClick={() => {
+                                setAddingNewMeeting(true);
+                                setEditingMeeting(null);
+                            }}>Dodaj nowe spotkanie</button>
                     }
+
                     {meetings.length > 0 &&
                         <MeetingsList
                             meetings={meetings}
@@ -103,6 +130,7 @@ export default function MeetingsPage({ username }) {
                             onDelete={handleDeleteMeeting}
                             onRegister={handleRegister}
                             onUnregister={handleUnregister}
+                            onEdit={handleEdit}
                         />
                     }
                 </>
@@ -110,4 +138,5 @@ export default function MeetingsPage({ username }) {
         </div>
     );
 }
+
 

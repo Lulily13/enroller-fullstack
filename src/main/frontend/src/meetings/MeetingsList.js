@@ -1,4 +1,4 @@
-export default function MeetingsList({ meetings, onDelete, onRegister, onUnregister, username }) {
+export default function MeetingsList({ meetings, onDelete, onRegister, onUnregister, username, onEdit }) {
     return (
         <table>
             <thead>
@@ -22,7 +22,9 @@ export default function MeetingsList({ meetings, onDelete, onRegister, onUnregis
                                 <button className="meeting-list-button" onClick={() => onRegister(meeting)}>Zapisz
                                     się</button>
                             )}
-                            <button className="meeting-list-button delete" onClick={() => onDelete(meeting)}>Usuń spotkanie
+                            <button className="meeting-list-button" onClick={() => onEdit(meeting)}>Edytuj spotkanie</button>
+                            <button className="meeting-list-button delete" onClick={() => onDelete(meeting)}>Usuń
+                                spotkanie
                             </button>
                         </td>
                     </tr>
