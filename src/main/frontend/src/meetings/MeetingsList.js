@@ -1,5 +1,4 @@
-// Komponent MeetingsList
-export default function MeetingsList({ meetings, onDelete }) {
+export default function MeetingsList({ meetings, onDelete, onRegister, onUnregister, username }) {
     return (
         <table>
             <thead>
@@ -17,6 +16,11 @@ export default function MeetingsList({ meetings, onDelete }) {
                         <td>{meeting.description}</td>
                         <td>
                             <button onClick={() => onDelete(meeting)}>Usuń spotkanie</button>
+                            {meeting.participants?.some(p => p.login === username) ? (
+                                <button onClick={() => onUnregister(meeting)}>Wypisz się</button>
+                            ) : (
+                                <button onClick={() => onRegister(meeting)}>Zapisz się</button>
+                            )}
                         </td>
                     </tr>
                 ))

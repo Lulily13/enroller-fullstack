@@ -45,8 +45,11 @@ public class MeetingService {
     }
 
     public void delete(Meeting meeting) {
-        Transaction transaction = this.session.beginTransaction();
-        this.session.delete(meeting);
+        if (hasParticipants(meeting)) {
+            throw new IllegalStateException("Cannot delete a meeting with participants.");
+        }
+        Transaction transaction = session.beginTransaction();
+        session.delete(meeting);
         transaction.commit();
     }
 
@@ -69,5 +72,24 @@ public class MeetingService {
                 .list();
         return query.list().size() != 0;
     }
+
+    public void addParticipant(Meeting meeting, Participant participant) {
+        Transaction tx = session.beginTransaction();
+        meeting.getParticipants().add(participant);
+        session.update(meeting);
+        tx.commit();
+    }
+
+    public void removeParticipant(Meeting meeting, Participant participant) {
+        Transaction tx = session.beginTransaction();
+        meeting.getParticipants().remove(participant);
+        session.update(meeting);
+        tx.commit();
+    }
+
+    public boolean hasParticipants(Meeting meeting) {
+        return !meeting.getParticipants().isEmpty();
+    }
+
 
 }
